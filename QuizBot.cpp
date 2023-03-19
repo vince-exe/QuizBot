@@ -2,7 +2,7 @@
 #include "commands/bot_commands.h"
 
 int main() {
-    TgBot::Bot quizBot("6265358048:AAFGQVuqhsZ_C5Hdf85t7x5yw0rYZLfDmNs");
+    TgBot::Bot quizBot("");
 
     BotCommands botCommands(&quizBot);
     botCommands.init();
