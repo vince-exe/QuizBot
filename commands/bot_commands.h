@@ -8,7 +8,11 @@ class BotCommands {
 private:
     TgBot::Bot* bot;
     TgBot::EventBroadcaster* eventBroadCaster;
+
     TgBot::InlineKeyboardMarkup::Ptr startKeyBoard;
+    TgBot::InlineKeyboardMarkup::Ptr backToStartPanel;
+
+    TgBot::CallbackQuery::Ptr query;
 
 public:
     /**
@@ -26,6 +30,8 @@ public:
      * 
      */
     void init();
+
+    void callBackQuery();
 
     void start();
 };
