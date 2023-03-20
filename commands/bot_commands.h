@@ -11,7 +11,8 @@ private:
 
     TgBot::InlineKeyboardMarkup::Ptr startKeyBoard;
     TgBot::InlineKeyboardMarkup::Ptr backToStartPanel;
-
+    TgBot::InlineKeyboardMarkup::Ptr configKeyBoard;
+    
     TgBot::CallbackQuery::Ptr query;
 
 public:

@@ -12,6 +12,9 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
 
     TgBot::InlineKeyboardMarkup::Ptr backToStartPanel(new TgBot::InlineKeyboardMarkup);
     this->backToStartPanel = backToStartPanel;
+
+    TgBot::InlineKeyboardMarkup::Ptr configKeyBoard(new TgBot::InlineKeyboardMarkup);
+    this->configKeyBoard = configKeyBoard;
 }
 
 BotCommands::~BotCommands() {
@@ -34,6 +37,11 @@ void BotCommands::init() {
 
     BotUtils::setKeyBoard((this->backToStartPanel), {{"🔙 Back", "backToStartPanel"}});
 
+    BotUtils::setKeyBoard((this->configKeyBoard), {
+        {"🛠️ Configura Domande", "questions_config"},
+        {"🔖 Vedi Domande", "show_questions"}
+    });
+
     this->callBackQuery();
     this->start();
 }
@@ -51,6 +59,15 @@ void BotCommands::callBackQuery() {
             }
             else if(query->data == "backToStartPanel") {
                 BotMessages::editStartMessage(this->bot, query->message->chat->id, query->message->messageId, user, this->startKeyBoard);
+            }
+            else if(query->data == "ToS") {
+                BotMessages::printToS(this->bot, query->message->chat->id, query->message->messageId, this->backToStartPanel);
+            }
+            else if(query->data == "update_private" && !this->bot->getApi().blockedByUser(user->user->id)) {
+                BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
+            } 
+            else if(query->data == "questions_config") {
+                
             }
         }
         catch(std::exception& e) {
