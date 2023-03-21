@@ -4,6 +4,7 @@
 #include "../utils/bot_utils.h"
 
 BotCommands::BotCommands(TgBot::Bot* bot) {
+    this->isConfigQuestions = false;
     this->bot = bot;
     this->eventBroadCaster = &this->bot->getEvents();
 
@@ -52,7 +53,6 @@ void BotCommands::callBackQuery() {
         this->query = query;
 
         if(user->status != "creator") { return; }
-
         try {
             if(query->data == "developers") {
                 BotMessages::developersEdit(this->bot, query->message->chat->id, query->message->messageId, this->backToStartPanel);
@@ -67,7 +67,7 @@ void BotCommands::callBackQuery() {
                 BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
             } 
             else if(query->data == "questions_config") {
-                
+
             }
         }
         catch(std::exception& e) {
@@ -82,5 +82,11 @@ void BotCommands::start() {
         if(user->user->isBot || !user || user->status != "creator") { return; }
 
         BotMessages::startMessage(this->bot, message->chat->id, user, this->startKeyBoard);
+    });
+}
+
+void BotCommands::onAnyMessage() {
+    this->eventBroadCaster->onAnyMessage([this](TgBot::Message::Ptr message) {
+
     });
 }

@@ -46,8 +46,14 @@ void BotMessages::printToS(TgBot::Bot* bot, int64_t chatId, int64_t messageId, T
 void BotMessages::printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
     bot->getApi().sendMessage(
         chatId,
-        "🤖 <b>Impostazioni Partita</b> " \
-        "\n\n<i>✏️ Non sarà possibile cambiare queste impostazioni fino alla prossima partita.</i>",
+        "🤖 <b>Configurazione Domande</b> " \
+        "\n\n🔖 Utilizza il pulsante \"🛠️ Configura Domande\" per configurare le domande" \
+        "\n\n⚠️ <b>Attenzione: </b> ogni volta che configurerai nuove domande, le precedenti verranno dimenticate" \
+        "\n\n✅ <b>Configurazione Domande Corretta</b>" \
+        "\n\n🔹 Le oche sono belle;V" \
+        "\n🔹 Gli uccelli volano;V" \
+        "\n🔹 Le mucche miagolano;F" \
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
         false, 0, keyboard, "HTML"
     );
 }

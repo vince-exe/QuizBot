@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
     /*
-    pair<list<Question>, unsigned int> domande = QuestionsChecker::getPhrases("Mimmo;V\nStefi;F\nMarco;V\nVince;F\n");
+    pair<list<Question>, unsigned int> domande = QuestionsChecker::getPhrases("") ;
     auto list = domande.first;
     std::cout<<"\nerrori: " << domande.second;
 
@@ -16,7 +16,7 @@ int main() {
         std::cout<<"\n\n";
     }
     */
-    /*
+    
     TgBot::Bot quizBot("");
 
     BotCommands botCommands(&quizBot);
@@ -36,5 +36,5 @@ int main() {
     }
     
     return EXIT_SUCCESS;
-    */
+    
 }

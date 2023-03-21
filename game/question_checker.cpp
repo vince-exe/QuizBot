@@ -29,7 +29,7 @@ pair<list<Question>, unsigned int> QuestionsChecker::getPhrases(const string ph)
                 i++;
             }
             if(checkCombinations(tmp)) {
-                date.push_back(Question(tmp, checkC(keyUp(tmp[1]))));
+                date.push_back(Question(temp, checkC(keyUp(tmp[1]))));
             }
             else {
                 j++;
@@ -41,5 +41,7 @@ pair<list<Question>, unsigned int> QuestionsChecker::getPhrases(const string ph)
             i++;
         }
     }
+
+    if(temp!="\n") j++;
     return {date, j};
 }

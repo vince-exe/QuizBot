@@ -15,6 +15,8 @@ private:
     
     TgBot::CallbackQuery::Ptr query;
 
+    bool isConfigQuestions;
+
 public:
     /**
      * @brief Construct a new Bot Commands object
@@ -35,6 +37,8 @@ public:
     void callBackQuery();
 
     void start();
+
+    void onAnyMessage();
 };
 
 #endif
