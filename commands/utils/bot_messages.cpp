@@ -58,6 +58,22 @@ void BotMessages::printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::Inlin
     );
 }
 
+void BotMessages::editConfigPanel(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyBoard) {
+    bot->getApi().editMessageText(
+        "🤖 <b>Configurazione Domande</b> " \
+        "\n\n🔖 Utilizza il comando /configQuestions per configurare le domande" \
+        "\n\n⚠️ <b>Attenzione: </b> ogni volta che configurerai nuove domande, le precedenti verranno dimenticate" \
+        "\n\n✅ <b>Configurazione Domande Corretta</b>" \
+        "\n\n🔹 Le oche sono belle;V" \
+        "\n🔹 Gli uccelli volano;V" \
+        "\n🔹 Le mucche miagolano;F" \
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        chatId,
+        messageId,
+        std::string(), "HTML", false, keyBoard
+    );
+}
+
 void BotMessages::badCommandArgs(TgBot::Bot* bot, int64_t chatId) {
     bot->getApi().sendMessage(
         chatId,
@@ -65,4 +81,36 @@ void BotMessages::badCommandArgs(TgBot::Bot* bot, int64_t chatId) {
         "\n\n⛔<b>Argomenti non idonei per il tipo di comando digitato.</b>",
         false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
     );
+}
+
+void BotMessages::phraseHasErrors(TgBot::Bot* bot, int64_t chatId, int errors) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Domande Non Valide</b>" \
+        "\n\n⛔ " + std::to_string(errors) + " delle domande inserite non rispettano la formattazione.",
+        false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
+    );
+}
+
+void BotMessages::emptyQuestionsList(TgBot::Bot* bot, int64_t chatId) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Non hai nessuna domanda.</b>",
+        false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
+    );
+}
+
+ void BotMessages::pharasesSuccess(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyBoard) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Domande Aggiunte</b>" \
+        "\n\n✅ Le domande sono state correttamente aggiunte." \
+        "\n\n🔖 Utilizza l'apposito pulsante per stamparle." \
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        false, 0, keyBoard, "HTML"
+    );
+}
+
+void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardButton::Ptr keyboard) {
+    ;
 }

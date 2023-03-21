@@ -2,6 +2,8 @@
 #include "commands/bot_commands.h"
 
 #include "game/question_checker.h"
+#include "game/game.h"
+
 using namespace std;
 
 int main() {
@@ -16,10 +18,13 @@ int main() {
         std::cout<<"\n\n";
     }
     */
+   
     TgBot::Bot quizBot("");
 
     BotCommands botCommands(&quizBot);
     botCommands.init();
+
+    Game::init();
 
     try {
         std::cout<<quizBot.getApi().getMe()->username << " started"; 

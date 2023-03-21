@@ -12,10 +12,9 @@ private:
     TgBot::InlineKeyboardMarkup::Ptr startKeyBoard;
     TgBot::InlineKeyboardMarkup::Ptr backToStartPanel;
     TgBot::InlineKeyboardMarkup::Ptr configKeyBoard;
+    TgBot::InlineKeyboardMarkup::Ptr backToSettingsPanel;
     
     TgBot::CallbackQuery::Ptr query;
-
-    bool isConfigQuestions;
 
 public:
     /**

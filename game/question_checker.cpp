@@ -30,18 +30,19 @@ pair<list<Question>, unsigned int> QuestionsChecker::getPhrases(const string ph)
             }
             if(checkCombinations(tmp)) {
                 date.push_back(Question(temp, checkC(keyUp(tmp[1]))));
+                temp = string();
             }
             else {
-                j++;
+                temp+=tmp;
             }
-            temp = string();
         }
         else{
-            temp+=str[i];
+            if(str[i]!='\n') {
+                temp+=str[i];
+            }
             i++;
         }
     }
-
-    if(temp!="\n") j++;
+    if(temp[0] != '\n' && temp[0] != '\0') j++;
     return {date, j};
 }
