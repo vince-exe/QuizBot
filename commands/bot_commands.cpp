@@ -43,8 +43,9 @@ void BotCommands::init() {
         {"🔖 Vedi Domande", "show_questions"}
     });
 
-    this->callBackQuery();
     this->start();
+    this->configQuestions();
+    this->callBackQuery();  
 }
 
 void BotCommands::callBackQuery() {
@@ -67,7 +68,7 @@ void BotCommands::callBackQuery() {
                 BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
             } 
             else if(query->data == "questions_config") {
-
+                this->isConfigQuestions = true;
             }
         }
         catch(std::exception& e) {
@@ -85,8 +86,15 @@ void BotCommands::start() {
     });
 }
 
-void BotCommands::onAnyMessage() {
-    this->eventBroadCaster->onAnyMessage([this](TgBot::Message::Ptr message) {
-
+void BotCommands::configQuestions() {
+    this->eventBroadCaster->onCommand("configQuestions", [this](TgBot::Message::Ptr message) {       
+        if(message->chat->type != TgBot::Chat::Type::Private) { return; }
+        
+        if(BotUtils::countArguments("/configQuestions", message->text) <= 0) {
+            BotMessages::badCommandArgs(this->bot, message->chat->id);
+            return;
+        }
+        
+        std::cout<<"\n"<<BotUtils::removeCommand(message->text, 17);
     });
 }

@@ -16,7 +16,6 @@ int main() {
         std::cout<<"\n\n";
     }
     */
-    
     TgBot::Bot quizBot("");
 
     BotCommands botCommands(&quizBot);

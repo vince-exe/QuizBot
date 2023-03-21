@@ -47,7 +47,7 @@ void BotMessages::printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::Inlin
     bot->getApi().sendMessage(
         chatId,
         "🤖 <b>Configurazione Domande</b> " \
-        "\n\n🔖 Utilizza il pulsante \"🛠️ Configura Domande\" per configurare le domande" \
+        "\n\n🔖 Utilizza il comando /configQuestions per configurare le domande" \
         "\n\n⚠️ <b>Attenzione: </b> ogni volta che configurerai nuove domande, le precedenti verranno dimenticate" \
         "\n\n✅ <b>Configurazione Domande Corretta</b>" \
         "\n\n🔹 Le oche sono belle;V" \
@@ -55,5 +55,14 @@ void BotMessages::printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::Inlin
         "\n🔹 Le mucche miagolano;F" \
         "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
         false, 0, keyboard, "HTML"
+    );
+}
+
+void BotMessages::badCommandArgs(TgBot::Bot* bot, int64_t chatId) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Comando Non Valido</b> " \
+        "\n\n⛔<b>Argomenti non idonei per il tipo di comando digitato.</b>",
+        false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
     );
 }

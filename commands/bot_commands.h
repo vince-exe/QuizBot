@@ -38,7 +38,7 @@ public:
 
     void start();
 
-    void onAnyMessage();
+    void configQuestions();
 };
 
 #endif
