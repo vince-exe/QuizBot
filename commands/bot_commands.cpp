@@ -61,7 +61,7 @@ void BotCommands::callBackQuery() {
                 BotMessages::emptyQuestionsList(this->bot, user->user->id);
             }
             else {
-                // todo
+                BotMessages::showQuestions(this->bot, user->user->id, query->message->messageId, this->backToSettingsPanel);
             }
             return;
         }

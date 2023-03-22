@@ -25,7 +25,7 @@ public:
 
     static void pharasesSuccess(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyBoard);
 
-    static void showQuestions(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardButton::Ptr keyboard);
+    static void showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 };
 
 #endif

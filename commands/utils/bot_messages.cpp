@@ -1,5 +1,8 @@
 #include "bot_messages.h"
 
+#include "../../game/question.h"
+#include "../../game/game.h"
+
 void BotMessages::startMessage(TgBot::Bot* bot, int64_t chatId, TgBot::ChatMember::Ptr user, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
     bot->getApi().sendMessage(
         chatId,
@@ -53,7 +56,7 @@ void BotMessages::printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::Inlin
         "\n\n🔹 Le oche sono belle;V" \
         "\n🔹 Gli uccelli volano;V" \
         "\n🔹 Le mucche miagolano;F" \
-        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitano a creare domande divertenti per migliorare l'esperienza di gioco!!",
         false, 0, keyboard, "HTML"
     );
 }
@@ -67,7 +70,7 @@ void BotMessages::editConfigPanel(TgBot::Bot* bot, int64_t chatId, int64_t messa
         "\n\n🔹 Le oche sono belle;V" \
         "\n🔹 Gli uccelli volano;V" \
         "\n🔹 Le mucche miagolano;F" \
-        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitano a creare domande divertenti per migliorare l'esperienza di gioco!!",
         chatId,
         messageId,
         std::string(), "HTML", false, keyBoard
@@ -106,11 +109,35 @@ void BotMessages::emptyQuestionsList(TgBot::Bot* bot, int64_t chatId) {
         "🤖 <b>Domande Aggiunte</b>" \
         "\n\n✅ Le domande sono state correttamente aggiunte." \
         "\n\n🔖 Utilizza l'apposito pulsante per stamparle." \
-        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitato a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        "\n\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitano a creare domande divertenti per migliorare l'esperienza di gioco!!",
         false, 0, keyBoard, "HTML"
     );
 }
 
-void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardButton::Ptr keyboard) {
-    ;
+void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
+    std::string msg;
+    Question question;
+
+    for(int i = 0; i < Game::manager->lenght(); i++) {
+        question = Game::manager->at(i);
+
+        msg += "🔹 " + question.getBody();
+        if(!question.getResult()) {
+            msg += " ❌";
+        }
+        else {
+            msg += " ✅";
+        }
+        msg+="\n\n";
+    }
+
+    bot->getApi().editMessageText(
+        "🤖 <b>Lista Domande</b>" \
+        "\n\n🔖 Ecco le domande salvate nel bot\n" \
+        "\n" + msg \
+        + "\n⛑️ Gli svilupattori di @Sir_QuizBot ti invitano a creare domande divertenti per migliorare l'esperienza di gioco!!",
+        chatId,
+        messageId,
+        std::string(), "HTML", false, keyboard
+    );
 }
