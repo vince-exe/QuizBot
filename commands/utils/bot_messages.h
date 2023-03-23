@@ -26,6 +26,12 @@ public:
     static void pharasesSuccess(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyBoard);
 
     static void showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
+
+    static TgBot::Message::Ptr secondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int secondsLeft);
+
+    static void editSecondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId, int secondsLeft);
+
+    static void timeFinishedEditMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId);
 };
 
 #endif

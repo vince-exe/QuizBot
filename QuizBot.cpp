@@ -1,4 +1,5 @@
 #include <tgbot/tgbot.h>
+
 #include "commands/bot_commands.h"
 
 #include "game/question_checker.h"

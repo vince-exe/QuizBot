@@ -1,9 +1,6 @@
 #include "bot_commands.h"
 
-#include "./utils/bot_messages.h"
-#include "../utils/bot_utils.h"
-#include "../game/question_checker.h"
-#include "../game/game.h"
+
 
 BotCommands::BotCommands(TgBot::Bot* bot) {
     this->bot = bot;
@@ -27,6 +24,15 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
 
 BotCommands::~BotCommands() {
     delete this->eventBroadCaster;
+}
+
+void* BotCommands::countThread(void* arg) {
+    
+    for(int i = 0; i < Game::timeForQuestion; i++) {
+        sleep(1);
+    }
+    std::cout<<"\nFinito!!";
+    pthread_exit(NULL);
 }
 
 void BotCommands::init() {
@@ -89,7 +95,10 @@ void BotCommands::callBackQuery() {
             else if(query->data == "update_private" && !this->bot->getApi().blockedByUser(user->user->id)) {
                 BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
             } 
-
+            else if(query->data == "startGame") {
+                pthread_t ptid;
+                pthread_create(&ptid, NULL, &countThread, NULL);
+            }
         }
         catch(std::exception& e) {
             return;

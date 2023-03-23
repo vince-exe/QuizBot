@@ -141,3 +141,34 @@ void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t message
         std::string(), "HTML", false, keyboard
     );
 }
+
+TgBot::Message::Ptr BotMessages::secondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int secondsLeft) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Tempistica Domanda</b>" \
+        "\n\n🔖 Rispondi alla domanda nel minor tempo possibile!!" \
+        "\n\n📮 <b>Secondi Rimanenti: </b>" + std::to_string(secondsLeft),
+        false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
+    );
+}
+
+void BotMessages::editSecondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId, int secondsLeft) {
+    bot->getApi().editMessageText(
+        "🤖 <b>Tempistica Domanda</b>" \
+        "\n\n🔖 Rispondi alla domanda nel minor tempo possibile!!" \
+        "\n\n📮 <b>Secondi Rimanenti: </b>" + std::to_string(secondsLeft),
+        chatId,
+        messageId,
+        std::string(), "HTML", false
+    );
+}
+
+void BotMessages::timeFinishedEditMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId) {
+    bot->getApi().editMessageText(
+        "🤖 <b>Tempistica Domanda</b>" \
+        "\n\n📛<b> Tempo Scaduto </b>",
+        chatId,
+        messageId,
+        std::string(), "HTML", false
+    );
+}
