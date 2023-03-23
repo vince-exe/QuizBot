@@ -7,6 +7,9 @@
 
 BotCommands::BotCommands(TgBot::Bot* bot) {
     this->bot = bot;
+    this->creatorId = 0;
+    this->botStarted = false;
+
     this->eventBroadCaster = &this->bot->getEvents();
 
     TgBot::InlineKeyboardMarkup::Ptr startKeyBoard(new TgBot::InlineKeyboardMarkup);
@@ -99,13 +102,16 @@ void BotCommands::start() {
         TgBot::ChatMember::Ptr user = this->bot->getApi().getChatMember(message->chat->id, message->from->id);
         if(user->user->isBot || !user || user->status != "creator") { return; }
 
+        this->creatorId = user->user->id;
+        this->botStarted = true;
+
         BotMessages::startMessage(this->bot, message->chat->id, user, this->startKeyBoard);
     });
 }
 
 void BotCommands::configQuestions() {
     this->eventBroadCaster->onCommand("configQuestions", [this](TgBot::Message::Ptr message) {       
-        if(message->chat->type != TgBot::Chat::Type::Private) { return; }
+        if(message->chat->type != TgBot::Chat::Type::Private || !this->botStarted || message->from->id != this->creatorId) { return; }
         
         if(BotUtils::countArguments("/configQuestions", message->text) <= 0) {
             BotMessages::badCommandArgs(this->bot, message->chat->id);

@@ -16,6 +16,10 @@ private:
     
     TgBot::CallbackQuery::Ptr query;
 
+    int64_t creatorId;
+
+    bool botStarted;
+    
 public:
     /**
      * @brief Construct a new Bot Commands object
