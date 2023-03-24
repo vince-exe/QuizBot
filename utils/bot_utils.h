@@ -47,7 +47,11 @@ namespace BotUtils {
      */
     std::string getEmoji(const std::string s, const std::string condition, const std::pair<std::string, std::string> emoji);
 
-    void selectionSort(std::vector<User>& vector);
+    int partition(std::vector<User> &v, int start, int end);
+
+    void swap(User& us1, User& us2);
+
+    void Quicksort(std::vector<User> &v, int start, int end);
 };
 
 #endif

@@ -28,6 +28,8 @@ private:
     int64_t creatorId;
     int64_t groupChat;
 
+    bool gameRunning;
+    
     TgBot::Message::Ptr timeFinishedMsg;
     TgBot::Message::Ptr questionMsg;
 

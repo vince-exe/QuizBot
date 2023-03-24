@@ -18,7 +18,10 @@ User::User(int64_t id, int points) {
 }
 
 User& User::operator=(User& user){
-    *this=user;
+    this->id = user.id;
+    this->name = user.name;
+    this->points = user.points;
+
     return *this;
 }
 

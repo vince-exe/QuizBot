@@ -4,6 +4,8 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
     this->bot = bot;
     this->creatorId = 0;
     this->groupChat = 0;
+    this->gameRunning = false;
+
     this->botStarted = false;
     this->gameStarted = false;
 
@@ -39,19 +41,19 @@ void* BotCommands::countThread(void* arg) {
     BotCommands* data = (BotCommands *) arg;
     
     TgBot::Message::Ptr msg = BotMessages::secondsLeftMessage(data->bot, data->groupChat, 10);
-
+  
     for(int i = 0; i < Game::timeForQuestion; i++) {
-        if(i == 5) {
-            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 5);
+        try {
+            if(i == 5) {
+                BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 5);
+            }
+
+            sleep(1);
         }
-        else if(i == 8) {
-            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 2);
-        }
-        else if(i == 9) {
-            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 1);
+        catch(std::exception& e) {
+            std::cout<<"\nThread Count Exception: " + (std::string)e.what();
         }
 
-        sleep(1);
     }
     std::cout<<"\nCount Thread Finished.";
 
@@ -112,6 +114,54 @@ void BotCommands::callBackQuery() {
             return;
         }
 
+        else if(query->data == "true_response" || query->data == "false_response") {
+            try {
+                /* if the user already clicked */
+                if(Game::checkVectorTest(user->user->id)) { return; }
+                Game::checkVector.push_back(user->user->id);
+                    
+                std::cout<<"\nentrato ragazzo: " << user->user->username;
+
+                if(Game::userExist(user->user->id)) { 
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
+                        query->data == "false_response" && !Game::selectedQuestion.getResult()) {
+
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::increaseUsrPoints(user->user->id, Game::pointsCorrectQuestion);
+                    }
+                    else {
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::decreaseUsrPoints(user->user->id, Game::pointIncorrectQuestion);
+                    }       
+                }
+                /* if it's the first time */
+                else {
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
+                        query->data == "false_response" && !Game::selectedQuestion.getResult()) {
+
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::usersVector.push_back(User(user->user->username, user->user->id, Game::pointsCorrectQuestion));
+                    }
+                    else {
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::usersVector.push_back(User(user->user->username, user->user->id, 0 - Game::pointIncorrectQuestion));
+                    }   
+                }
+            }
+            catch(std::exception& e) {
+                return;
+            }
+        }            
+
+        /* Buttons For Creator */
         if(user->status != "creator") { return; }
 
         try {
@@ -130,69 +180,37 @@ void BotCommands::callBackQuery() {
 
             if(!BotCommands::botStarted) { return; }
 
-            else if(query->data == "startGame") {
+            else if(query->data == "startGame" || query->data == "new_game") {
                 /* check if the questions list is empty */
                 if(!Game::manager->lenght()) {
                     BotMessages::emptyQuestionsList(this->bot, query->message->chat->id);
                     return;
                 }
 
+                if(this->gameRunning) { return; }
+
+                if(query->data == "new_game") {
+                    this->bot->getApi().deleteMessage(this->groupChat, this->questionMsg->messageId);
+                }
+                
                 pthread_t ptid;
                 pthread_create(&ptid, NULL, &BotCommands::countThread, (void *)this);
 
+                Game::usersVector.clear();
+                Game::currentQuestion = 0;
                 Game::selectedQuestion = Game::manager->at(Game::currentQuestion);
                 Game::checkVector.clear();
                 Game::numOfTrue = 0;
                 Game::numOfFalse = 0;
-                this->gameStarted = true;
 
+                this->gameStarted = true;
+                this->gameRunning = true;
+                
                 this->questionMsg = BotMessages::displayQuestion(this->bot, query->message->chat->id, this->playKeyboard);
             }
 
             if(!this->gameStarted) { return; }
 
-            else if(query->data == "true_response" || query->data == "false_response") {
-                /* if the user already clicked */
-                if(Game::checkVectorTest(user->user->id)) { return; }
-                Game::checkVector.push_back(user->user->id);
-
-                std::cout<<"\nentrato ragazzo: " << user->user->username;
-
-                if(Game::userExist(user->user->id)) { 
-                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
-                       query->data == "false_response" && !Game::selectedQuestion.getResult()) {
-
-                        if(query->data == "true_response") { Game::numOfTrue++; }
-                        else { Game::numOfFalse++; }
-
-                        Game::increaseUsrPoints(user->user->id, Game::pointsCorrectQuestion);
-                    }
-                    else {
-                        if(query->data == "true_response") { Game::numOfTrue++; }
-                        else { Game::numOfFalse++; }
-
-                        Game::decreaseUsrPoints(user->user->id, Game::pointIncorrectQuestion);
-                    }       
-                }
-                /* if it's the first time */
-                else {
-                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
-                       query->data == "false_response" && !Game::selectedQuestion.getResult()) {
-
-                        if(query->data == "true_response") { Game::numOfTrue++; }
-                        else { Game::numOfFalse++; }
-
-                        Game::usersVector.push_back(User(user->user->username, user->user->id, Game::pointsCorrectQuestion));
-                    }
-
-                    else {
-                        if(query->data == "true_response") { Game::numOfTrue++; }
-                        else { Game::numOfFalse++; }
-
-                        Game::usersVector.push_back(User(user->user->username, user->user->id, 0 - Game::pointIncorrectQuestion));
-                    }   
-                }
-            }
             else if(query->data == "next_question" && user->status == "creator") {
                 Game::currentQuestion++;
 
@@ -200,7 +218,8 @@ void BotCommands::callBackQuery() {
                 if(Game::currentQuestion >= Game::manager->lenght()) {
                     this->bot->getApi().deleteMessage(this->groupChat, this->timeFinishedMsg->messageId);
                     BotMessages::editGameFinished(this->bot, query->message->chat->id, this->questionMsg->messageId, this->newGameKeyboard);
-                    
+                    this->gameRunning = false;
+
                     return;
                 }
 
@@ -249,12 +268,6 @@ void BotCommands::configQuestions() {
         
         std::string checkString = BotUtils::removeCommand(message->text, 17);
         pair<list<Question>, unsigned int> check = QuestionsChecker::getPhrases(checkString);
-
-        for(auto element : check.first) {
-            std::cout<<"\nBody: " << element.getBody();
-            std::cout<<"\nResult: " << element.getResult();
-            std::cout<<"\n\n";
-        }
 
         Game::manager->clear();
 

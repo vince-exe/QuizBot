@@ -203,7 +203,7 @@ TgBot::Message::Ptr BotMessages::editDisplayQuestion(TgBot::Bot* bot, int64_t ch
 
 void BotMessages::editGameFinished(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
     std::string top;
-    BotUtils::selectionSort(Game::usersVector);
+    BotUtils::Quicksort(Game::usersVector, 0, Game::usersVector.size() - 1);
 
     for(auto& el : Game::usersVector) {
         top += "\n\n💰 <b>Punteggio: </b>" + std::to_string(el.getPoints()) + "  🔸 @" + el.getName();
@@ -211,7 +211,7 @@ void BotMessages::editGameFinished(TgBot::Bot* bot, int64_t chatId, int64_t mess
 
     bot->getApi().editMessageText(
         "🤖 <b>Risultati Domanda</b>" \
-        "\n\n👑 <b> Classifica Giocatori </b>" \
+        "\n\n👑 <b> Classifica Giocatori </b> " \
         + top + \
         "\n\n📮 Gli svilupattori di @Sir_QuizBot vi augurano un buon proseguimento!!",
         chatId, messageId, std::string(), "HTML", false, keyboard

@@ -39,19 +39,34 @@ std::string BotUtils::getEmoji(const std::string s, const std::string condition,
     return (s == condition ) ? emoji.first : emoji.second;
 }
 
-void BotUtils::selectionSort(std::vector<User>& vector) {
-    int min;
-    User temp;
-    
-    for(int i = 0; i < vector.size() - 1; i++) {
-	    min = i;
-        for(int j = i + 1; j < vector.size(); j++) {
-        	if (vector[j].getPoints() < vector[min].getPoints()) {
-        	    min = j;
-            }
-        }
-        temp = vector[min];
-        vector[min] = vector[i];
-        vector[i] = temp;
-    }
+void BotUtils::swap(User& us1, User& us2) {
+    User us3 = us1;
+
+    us1 = us2;
+    us2 = us3;
+}
+
+int BotUtils::partition(std::vector<User> &v, int start, int end) {
+    int pivot = end;
+	int j = start;
+
+	for(int i = start; i < end; ++i){
+		if(v[i].getPoints() > v[pivot].getPoints()){
+			BotUtils::swap(v[i],v[j]);
+			++j;
+		}
+	}
+
+	BotUtils::swap(v[j],v[pivot]);
+
+	return j;
+}
+
+void BotUtils::Quicksort(std::vector<User> &v, int start, int end ) {
+	if(start < end){
+		int p = BotUtils::partition(v,start,end);
+		BotUtils::Quicksort(v,start,p-1);
+		BotUtils::Quicksort(v,p+1,end);
+	}
+	
 }
