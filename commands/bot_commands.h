@@ -19,13 +19,20 @@ private:
     TgBot::InlineKeyboardMarkup::Ptr backToStartPanel;
     TgBot::InlineKeyboardMarkup::Ptr configKeyBoard;
     TgBot::InlineKeyboardMarkup::Ptr backToSettingsPanel;
-    
+    TgBot::InlineKeyboardMarkup::Ptr playKeyboard;
+    TgBot::InlineKeyboardMarkup::Ptr nextQuestionKeyboard;
+
     TgBot::CallbackQuery::Ptr query;
 
     int64_t creatorId;
+    int64_t groupChat;
+
+    TgBot::Message::Ptr timeFinishedMsg;
+    TgBot::Message::Ptr questionMsg;
 
     bool botStarted;
-
+    bool gameStarted;
+    
 private:
     /* this function has to be static because the normal class method has an hide paramater "this", that the "pthread_create()"" doesn't understand */
     static void* countThread(void* arg);

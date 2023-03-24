@@ -1,8 +1,8 @@
 #ifndef GAME_SETTINGS_H
 #define GAME_SETTINGS_H
 
-#include <list>
-#include <map>
+#include <vector>
+#include <iostream>
 
 #include "questions_manager.h"
 #include "user.h"
@@ -13,11 +13,27 @@ class Game {
 public:
     static QuestionsManager* manager;
 
-    static map<unsigned int, User> usersMap;
-    
-    static int timeForQuestion;
+    static vector<User> usersVector;
+    static vector<int64_t> checkVector;
 
+    static Question selectedQuestion;
+
+    static int timeForQuestion;
+    static int pointsCorrectQuestion;
+    static int pointIncorrectQuestion;
+    static int currentQuestion;
+    static int numOfTrue;
+    static int numOfFalse;
+    
     static void init();
+
+    static bool userExist(int64_t id);
+
+    static void increaseUsrPoints(int64_t id, unsigned int points);
+
+    static void decreaseUsrPoints(int64_t id, unsigned int points);
+
+    static bool checkVectorTest(int64_t id);
 };
 
 

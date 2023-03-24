@@ -1,11 +1,11 @@
 #include "bot_commands.h"
 
-
-
 BotCommands::BotCommands(TgBot::Bot* bot) {
     this->bot = bot;
     this->creatorId = 0;
+    this->groupChat = 0;
     this->botStarted = false;
+    this->gameStarted = false;
 
     this->eventBroadCaster = &this->bot->getEvents();
 
@@ -20,6 +20,12 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
     
     TgBot::InlineKeyboardMarkup::Ptr backToSettingsPanel(new TgBot::InlineKeyboardMarkup);
     this->backToSettingsPanel = backToSettingsPanel;
+
+    TgBot::InlineKeyboardMarkup::Ptr playKeyboard(new TgBot::InlineKeyboardMarkup);
+    this->playKeyboard = playKeyboard;
+
+    TgBot::InlineKeyboardMarkup::Ptr nextQuestionKeyboard(new TgBot::InlineKeyboardMarkup);
+    this->nextQuestionKeyboard = nextQuestionKeyboard;
 }
 
 BotCommands::~BotCommands() {
@@ -27,11 +33,28 @@ BotCommands::~BotCommands() {
 }
 
 void* BotCommands::countThread(void* arg) {
+    BotCommands* data = (BotCommands *) arg;
     
+    TgBot::Message::Ptr msg = BotMessages::secondsLeftMessage(data->bot, data->groupChat, 10);
+
     for(int i = 0; i < Game::timeForQuestion; i++) {
+        if(i == 5) {
+            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 5);
+        }
+        else if(i == 8) {
+            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 2);
+        }
+        else if(i == 9) {
+            BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 1);
+        }
+
         sleep(1);
     }
-    std::cout<<"\nFinito!!";
+    std::cout<<"\nCount Thread Finished.";
+
+    data->timeFinishedMsg = BotMessages::timeFinishedEditMessage(data->bot, data->groupChat, msg->messageId);
+    BotMessages::editDisplayQuestion(data->bot, data->groupChat, data->questionMsg->messageId, data->nextQuestionKeyboard);
+
     pthread_exit(NULL);
 }
 
@@ -54,6 +77,10 @@ void BotCommands::init() {
     BotUtils::setKeyBoard((this->configKeyBoard), {{"🔖 Vedi Domande", "show_questions"}});
 
     BotUtils::setKeyBoard((this->backToSettingsPanel), {{"🛠️ Pannello Impostazioni", "back_config_panel"}});
+
+    BotUtils::setKeyBoard((this->playKeyboard), {{"✅ Vero", "true_response"}, {"❌ Falso", "false_response"}});
+    
+    BotUtils::setKeyBoard((this->nextQuestionKeyboard), {{"🔖 Prossima Domanda", "next_question"}});
 
     this->start();
     this->configQuestions();
@@ -95,9 +122,80 @@ void BotCommands::callBackQuery() {
             else if(query->data == "update_private" && !this->bot->getApi().blockedByUser(user->user->id)) {
                 BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
             } 
+
+            if(!BotCommands::botStarted) { return; }
+
             else if(query->data == "startGame") {
+                /* check if the questions list is empty */
+                if(!Game::manager->lenght()) {
+                    BotMessages::emptyQuestionsList(this->bot, query->message->chat->id);
+                    return;
+                }
+
                 pthread_t ptid;
-                pthread_create(&ptid, NULL, &countThread, NULL);
+                pthread_create(&ptid, NULL, &BotCommands::countThread, (void *)this);
+
+                Game::selectedQuestion = Game::manager->at(Game::currentQuestion);
+                Game::checkVector.clear();
+                Game::numOfTrue = 0;
+                Game::numOfFalse = 0;
+                this->gameStarted = true;
+
+                this->questionMsg = BotMessages::displayQuestion(this->bot, query->message->chat->id, this->playKeyboard);
+            }
+
+            if(!this->gameStarted) { return; }
+
+            else if(query->data == "true_response" || query->data == "false_response") {
+                /* if the user already clicked */
+                if(Game::checkVectorTest(user->user->id)) { return; }
+                Game::checkVector.push_back(user->user->id);
+
+                std::cout<<"\nentrato ragazzo: " << user->user->username;
+
+                if(Game::userExist(user->user->id)) { 
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult()) {
+                        Game::numOfTrue++;
+                        Game::increaseUsrPoints(user->user->id, Game::pointsCorrectQuestion);
+                    }
+                    else {
+                        Game::numOfFalse++;
+                        Game::decreaseUsrPoints(user->user->id, Game::pointIncorrectQuestion);
+                    }   
+                }
+                /* if it's the first time */
+                else {
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult()) {
+                        Game::numOfTrue++;
+                        Game::usersVector.push_back(User(user->user->id, Game::pointsCorrectQuestion));
+                    }
+                    else {
+                        Game::numOfFalse++;
+                        Game::usersVector.push_back(User(user->user->id, Game::pointIncorrectQuestion));
+                    }   
+                }
+            }
+            else if(query->data == "next_question" && user->status == "creator") {
+                Game::currentQuestion++;
+
+                /* finished */
+                if(Game::currentQuestion > Game::manager->lenght()) {
+                    return;
+                }
+
+                Game::selectedQuestion = Game::manager->at(Game::currentQuestion);
+                Game::checkVector.clear();
+                Game::numOfTrue = 0;
+                Game::numOfFalse = 0;
+                this->gameStarted = true;
+
+                this->bot->getApi().deleteMessage(this->groupChat, this->timeFinishedMsg->messageId);
+                this->bot->getApi().deleteMessage(this->groupChat, this->questionMsg->messageId);
+
+                pthread_t ptid;
+                pthread_create(&ptid, NULL, &BotCommands::countThread, (void *)this);
+
+                this->questionMsg = BotMessages::displayQuestion(this->bot, query->message->chat->id, this->playKeyboard);
             }
         }
         catch(std::exception& e) {
@@ -112,6 +210,7 @@ void BotCommands::start() {
         if(user->user->isBot || !user || user->status != "creator") { return; }
 
         this->creatorId = user->user->id;
+        this->groupChat = message->chat->id;
         this->botStarted = true;
 
         BotMessages::startMessage(this->bot, message->chat->id, user, this->startKeyBoard);

@@ -12,10 +12,9 @@ User::User(std::string name, int64_t id, unsigned int points){
     this->points=points;
 }
 
-User::User(User &user){
-    this->name=user.getName();
-    this->id=user.getId();
-    this->points=user.getPoints();
+User::User(int64_t id, unsigned int points) {
+    this->id=id;
+    this->points=points;
 }
 
 User& User::operator=(User& user){

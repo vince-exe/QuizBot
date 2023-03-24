@@ -17,6 +17,8 @@ int main() {
 
     try {
         std::cout<<quizBot.getApi().getMe()->username << " started"; 
+        quizBot.getApi().deleteWebhook();
+        
         TgBot::TgLongPoll longPoll(quizBot);
 
         while (true) {

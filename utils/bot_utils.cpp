@@ -34,3 +34,7 @@ int BotUtils::countArguments(const std::string command, const std::string messag
 
     return countArguments;
 }
+
+std::string BotUtils::getEmoji(const std::string s, const std::string condition, const std::pair<std::string, std::string> emoji) {
+    return (s == condition ) ? emoji.first : emoji.second;
+}

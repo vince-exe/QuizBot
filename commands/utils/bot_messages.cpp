@@ -1,8 +1,5 @@
 #include "bot_messages.h"
 
-#include "../../game/question.h"
-#include "../../game/game.h"
-
 void BotMessages::startMessage(TgBot::Bot* bot, int64_t chatId, TgBot::ChatMember::Ptr user, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
     bot->getApi().sendMessage(
         chatId,
@@ -98,7 +95,9 @@ void BotMessages::phraseHasErrors(TgBot::Bot* bot, int64_t chatId, int errors) {
 void BotMessages::emptyQuestionsList(TgBot::Bot* bot, int64_t chatId) {
     bot->getApi().sendMessage(
         chatId,
-        "🤖 <b>Non hai nessuna domanda.</b>",
+        "🤖 <b>Avviso Bot</b> " \
+        "\n\n⛔ La lista di quesiti è vuota." \
+        "\n\n🔖 Utilizza il comando /configQuestions per configurare dei quesiti.",
         false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
     );
 }
@@ -143,7 +142,7 @@ void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t message
 }
 
 TgBot::Message::Ptr BotMessages::secondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int secondsLeft) {
-    bot->getApi().sendMessage(
+    return bot->getApi().sendMessage(
         chatId,
         "🤖 <b>Tempistica Domanda</b>" \
         "\n\n🔖 Rispondi alla domanda nel minor tempo possibile!!" \
@@ -163,12 +162,40 @@ void BotMessages::editSecondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int64_
     );
 }
 
-void BotMessages::timeFinishedEditMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId) {
-    bot->getApi().editMessageText(
+TgBot::Message::Ptr BotMessages::timeFinishedEditMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId) {
+    return bot->getApi().editMessageText(
         "🤖 <b>Tempistica Domanda</b>" \
         "\n\n📛<b> Tempo Scaduto </b>",
         chatId,
         messageId,
         std::string(), "HTML", false
+    );
+}
+
+TgBot::Message::Ptr BotMessages::displayQuestion(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
+    Question q = Game::manager->at(Game::currentQuestion);
+
+    return bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Domanda n: " + std::to_string(Game::currentQuestion + 1) + "</b>" \
+        "\n\n✅ <b>Vero</b>   o   ❌ <b>Falso</b> 🤨" \
+        "\n\n📮 " + q.getBody(),
+        false, 0, keyboard, "HTML"
+    );
+}
+
+TgBot::Message::Ptr BotMessages::editDisplayQuestion(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
+    std::string s = (Game::selectedQuestion.getResult() == true) ? "true" : "false";
+
+    return bot->getApi().editMessageText(
+        "🤖 <b>Risultati Domanda</b>" \
+        "\n\n📮<b> Soluzione: </b> " + BotUtils::getEmoji(s, "true", {"✅", "❌"}) + \
+        "\n\n📛 <i>Risposte degli utenti...</i>" \
+        "\n\n✅: <b>" + std::to_string(Game::numOfTrue) + "</b>" \
+        "\n\n❌: <b>" + std::to_string(Game::numOfFalse) + "</b>" \
+        "\n\n🔱 Attendere il creator del gruppo per passare alla prossima domanda.",
+        chatId,
+        messageId,
+        std::string(), "HTML", false, keyboard
     );
 }
