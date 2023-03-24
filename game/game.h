@@ -6,6 +6,7 @@
 
 #include "questions_manager.h"
 #include "user.h"
+#include "../utils/bot_utils.h"
 
 using namespace std;
 
@@ -29,9 +30,9 @@ public:
 
     static bool userExist(int64_t id);
 
-    static void increaseUsrPoints(int64_t id, unsigned int points);
+    static void increaseUsrPoints(int64_t id, int points);
 
-    static void decreaseUsrPoints(int64_t id, unsigned int points);
+    static void decreaseUsrPoints(int64_t id, int points);
 
     static bool checkVectorTest(int64_t id);
 };

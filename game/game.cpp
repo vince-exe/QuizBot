@@ -32,7 +32,7 @@ bool Game::userExist(int64_t id) {
     return false;
 }
 
-void Game::increaseUsrPoints(int64_t id, unsigned int points) {
+void Game::increaseUsrPoints(int64_t id, int points) {
     for(auto& el : Game::usersVector) {
         if(el.getId() == id) {
             el.setPoints(el.getPoints() + points);
@@ -40,7 +40,7 @@ void Game::increaseUsrPoints(int64_t id, unsigned int points) {
     }
 }
 
-void Game::decreaseUsrPoints(int64_t id, unsigned int points) {
+void Game::decreaseUsrPoints(int64_t id, int points) {
     for(auto& el : Game::usersVector) {
         if(el.getId() == id) {
             el.setPoints(el.getPoints() - points);

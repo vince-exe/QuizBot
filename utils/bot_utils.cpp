@@ -38,3 +38,20 @@ int BotUtils::countArguments(const std::string command, const std::string messag
 std::string BotUtils::getEmoji(const std::string s, const std::string condition, const std::pair<std::string, std::string> emoji) {
     return (s == condition ) ? emoji.first : emoji.second;
 }
+
+void BotUtils::selectionSort(std::vector<User>& vector) {
+    int min;
+    User temp;
+    
+    for(int i = 0; i < vector.size() - 1; i++) {
+	    min = i;
+        for(int j = i + 1; j < vector.size(); j++) {
+        	if (vector[j].getPoints() < vector[min].getPoints()) {
+        	    min = j;
+            }
+        }
+        temp = vector[min];
+        vector[min] = vector[i];
+        vector[i] = temp;
+    }
+}

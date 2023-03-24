@@ -2,6 +2,10 @@
 #define BOT_UTILS_H
 
 #include <tgbot/tgbot.h>
+#include <vector>
+#include <iostream>
+
+#include "../game/user.h"
 
 namespace BotUtils {
     /**
@@ -42,6 +46,8 @@ namespace BotUtils {
      * 
      */
     std::string getEmoji(const std::string s, const std::string condition, const std::pair<std::string, std::string> emoji);
+
+    void selectionSort(std::vector<User>& vector);
 };
 
 #endif

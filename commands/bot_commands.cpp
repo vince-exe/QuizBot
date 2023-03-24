@@ -26,6 +26,9 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
 
     TgBot::InlineKeyboardMarkup::Ptr nextQuestionKeyboard(new TgBot::InlineKeyboardMarkup);
     this->nextQuestionKeyboard = nextQuestionKeyboard;
+
+    TgBot::InlineKeyboardMarkup::Ptr newGameKeyboard(new TgBot::InlineKeyboardMarkup);
+    this->newGameKeyboard = newGameKeyboard;
 }
 
 BotCommands::~BotCommands() {
@@ -81,6 +84,8 @@ void BotCommands::init() {
     BotUtils::setKeyBoard((this->playKeyboard), {{"✅ Vero", "true_response"}, {"❌ Falso", "false_response"}});
     
     BotUtils::setKeyBoard((this->nextQuestionKeyboard), {{"🔖 Prossima Domanda", "next_question"}});
+
+    BotUtils::setKeyBoard((this->newGameKeyboard), {{"✅ Nuova Partita", "new_game"}});
 
     this->start();
     this->configQuestions();
@@ -154,24 +159,37 @@ void BotCommands::callBackQuery() {
                 std::cout<<"\nentrato ragazzo: " << user->user->username;
 
                 if(Game::userExist(user->user->id)) { 
-                    if(query->data == "true_response" && Game::selectedQuestion.getResult()) {
-                        Game::numOfTrue++;
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
+                       query->data == "false_response" && !Game::selectedQuestion.getResult()) {
+
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
                         Game::increaseUsrPoints(user->user->id, Game::pointsCorrectQuestion);
                     }
                     else {
-                        Game::numOfFalse++;
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
                         Game::decreaseUsrPoints(user->user->id, Game::pointIncorrectQuestion);
-                    }   
+                    }       
                 }
                 /* if it's the first time */
                 else {
-                    if(query->data == "true_response" && Game::selectedQuestion.getResult()) {
-                        Game::numOfTrue++;
-                        Game::usersVector.push_back(User(user->user->id, Game::pointsCorrectQuestion));
+                    if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
+                       query->data == "false_response" && !Game::selectedQuestion.getResult()) {
+
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::usersVector.push_back(User(user->user->username, user->user->id, Game::pointsCorrectQuestion));
                     }
+
                     else {
-                        Game::numOfFalse++;
-                        Game::usersVector.push_back(User(user->user->id, Game::pointIncorrectQuestion));
+                        if(query->data == "true_response") { Game::numOfTrue++; }
+                        else { Game::numOfFalse++; }
+
+                        Game::usersVector.push_back(User(user->user->username, user->user->id, 0 - Game::pointIncorrectQuestion));
                     }   
                 }
             }
@@ -179,7 +197,10 @@ void BotCommands::callBackQuery() {
                 Game::currentQuestion++;
 
                 /* finished */
-                if(Game::currentQuestion > Game::manager->lenght()) {
+                if(Game::currentQuestion >= Game::manager->lenght()) {
+                    this->bot->getApi().deleteMessage(this->groupChat, this->timeFinishedMsg->messageId);
+                    BotMessages::editGameFinished(this->bot, query->message->chat->id, this->questionMsg->messageId, this->newGameKeyboard);
+                    
                     return;
                 }
 

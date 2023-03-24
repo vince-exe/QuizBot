@@ -9,14 +9,14 @@ private:
 
     int64_t id;
 
-    unsigned int points;
+    int points;
 
 public:
     User();
 
-    User(std::string name, int64_t id, unsigned int points);
+    User(std::string name, int64_t id, int points);
 
-    User(int64_t id, unsigned int points);
+    User(int64_t id, int points);
 
     User& operator=(User& user);
 
@@ -24,13 +24,13 @@ public:
 
     void setId(int64_t id);
 
-    void setPoints(unsigned int points);
+    void setPoints(int points);
 
     std::string getName();
 
     int64_t getId();
 
-    unsigned int getPoints();
+    int getPoints();
     
     std::string toString();
 };

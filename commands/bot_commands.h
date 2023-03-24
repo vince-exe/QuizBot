@@ -21,6 +21,7 @@ private:
     TgBot::InlineKeyboardMarkup::Ptr backToSettingsPanel;
     TgBot::InlineKeyboardMarkup::Ptr playKeyboard;
     TgBot::InlineKeyboardMarkup::Ptr nextQuestionKeyboard;
+    TgBot::InlineKeyboardMarkup::Ptr newGameKeyboard;
 
     TgBot::CallbackQuery::Ptr query;
 

@@ -42,6 +42,8 @@ public:
     static TgBot::Message::Ptr displayQuestion(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
     static TgBot::Message::Ptr editDisplayQuestion(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
+
+    static void editGameFinished(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 };
 
 #endif

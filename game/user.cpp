@@ -6,13 +6,13 @@ User::User(){
     this->points=0;
 }
 
-User::User(std::string name, int64_t id, unsigned int points){
+User::User(std::string name, int64_t id, int points){
     this->name=name;
     this->id=id;
     this->points=points;
 }
 
-User::User(int64_t id, unsigned int points) {
+User::User(int64_t id, int points) {
     this->id=id;
     this->points=points;
 }
@@ -30,7 +30,7 @@ void User::setId(int64_t id){
     this->id=id;
 }
 
-void User::setPoints(unsigned int points){
+void User::setPoints(int points){
     this->points=points;
 }
 
@@ -42,7 +42,7 @@ int64_t User::getId(){
     return this->id;
 }
 
-unsigned int User::getPoints(){
+int User::getPoints(){
     return this->points;
 }
 

@@ -120,7 +120,7 @@ void BotMessages::showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t message
     for(int i = 0; i < Game::manager->lenght(); i++) {
         question = Game::manager->at(i);
 
-        msg += "🔹 " + question.getBody();
+        msg += "<b>" + std::to_string(i + 1) + ") </b>" + question.getBody();
         if(!question.getResult()) {
             msg += " ❌";
         }
@@ -177,7 +177,7 @@ TgBot::Message::Ptr BotMessages::displayQuestion(TgBot::Bot* bot, int64_t chatId
 
     return bot->getApi().sendMessage(
         chatId,
-        "🤖 <b>Domanda n: " + std::to_string(Game::currentQuestion + 1) + "</b>" \
+        "🤖 <b>Domanda n: " + std::to_string(Game::currentQuestion + 1) + " / " + std::to_string(Game::manager->lenght()) + "</b>" \
         "\n\n✅ <b>Vero</b>   o   ❌ <b>Falso</b> 🤨" \
         "\n\n📮 " + q.getBody(),
         false, 0, keyboard, "HTML"
@@ -189,6 +189,7 @@ TgBot::Message::Ptr BotMessages::editDisplayQuestion(TgBot::Bot* bot, int64_t ch
 
     return bot->getApi().editMessageText(
         "🤖 <b>Risultati Domanda</b>" \
+        "\n\n✏️ <b> Domanda: </b> " + Game::selectedQuestion.getBody() + \
         "\n\n📮<b> Soluzione: </b> " + BotUtils::getEmoji(s, "true", {"✅", "❌"}) + \
         "\n\n📛 <i>Risposte degli utenti...</i>" \
         "\n\n✅: <b>" + std::to_string(Game::numOfTrue) + "</b>" \
@@ -197,5 +198,22 @@ TgBot::Message::Ptr BotMessages::editDisplayQuestion(TgBot::Bot* bot, int64_t ch
         chatId,
         messageId,
         std::string(), "HTML", false, keyboard
+    );
+}
+
+void BotMessages::editGameFinished(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
+    std::string top;
+    BotUtils::selectionSort(Game::usersVector);
+
+    for(auto& el : Game::usersVector) {
+        top += "\n\n💰 <b>Punteggio: </b>" + std::to_string(el.getPoints()) + "  🔸 @" + el.getName();
+    } 
+
+    bot->getApi().editMessageText(
+        "🤖 <b>Risultati Domanda</b>" \
+        "\n\n👑 <b> Classifica Giocatori </b>" \
+        + top + \
+        "\n\n📮 Gli svilupattori di @Sir_QuizBot vi augurano un buon proseguimento!!",
+        chatId, messageId, std::string(), "HTML", false, keyboard
     );
 }
