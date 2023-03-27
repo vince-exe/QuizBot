@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+/**
+ * @brief this class rappresents a User object
+ * 
+ */
 class User{
 private:
     std::string name;

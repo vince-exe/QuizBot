@@ -7,6 +7,10 @@
 
 #include "../game/user.h"
 
+/**
+ * @brief this namespace contains all the utilities for the TelegramBot
+ * 
+ */
 namespace BotUtils {
     /**
      * @brief Set the TgBot::InlineKeyboardMarkup::Ptr object
@@ -47,10 +51,32 @@ namespace BotUtils {
      */
     std::string getEmoji(const std::string s, const std::string condition, const std::pair<std::string, std::string> emoji);
 
+    /**
+     * @brief used to divide the array
+     * 
+     * @param v the vector to divide
+     * 
+     * @param start start position
+     * 
+     * @param end final position
+     */
     int partition(std::vector<User> &v, int start, int end);
 
+    /**
+     * @brief function used to swap 2 users
+     * 
+     * @param us1 
+     * @param us2 
+     */
     void swap(User& us1, User& us2);
 
+    /**
+     * @brief quicksort algorithm
+     * 
+     * @param v 
+     * @param start 
+     * @param end 
+     */
     void Quicksort(std::vector<User> &v, int start, int end);
 };
 
