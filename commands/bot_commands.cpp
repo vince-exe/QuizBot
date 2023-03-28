@@ -187,10 +187,14 @@ void BotCommands::callBackQuery() {
                     return;
                 }
 
-                if(this->gameRunning) { return; }
+                if(this->gameRunning) { 
+                    this->bot->getApi().answerCallbackQuery(std::string(), "⚠️ Una partita è ancora in corso... ⚠️", true);
+                    return;
+                }
 
                 if(query->data == "new_game") {
                     this->bot->getApi().deleteMessage(this->groupChat, this->questionMsg->messageId);
+                    return;
                 }
                 
                 pthread_t ptid;
