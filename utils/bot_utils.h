@@ -78,6 +78,8 @@ namespace BotUtils {
      * @param end 
      */
     void Quicksort(std::vector<User> &v, int start, int end);
+
+    enum config { TimeForQuestion, PointsValidQuestion, PointsInvalidQuestion };
 };
 
 #endif

@@ -17,11 +17,12 @@ public:
 
     static void printToS(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
+    static void badCommandArgs(TgBot::Bot* bot, int64_t chatId);
+
+    /* Game Settings */
     static void printConfigPanel(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
     static void editConfigPanel(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyBoard);
-
-    static void badCommandArgs(TgBot::Bot* bot, int64_t chatId);
 
     static void phraseHasErrors(TgBot::Bot* bot, int64_t chatId, int errors);
 
@@ -31,8 +32,9 @@ public:
 
     static void showQuestions(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
-    /* Game Messages */
+    static void showConfigOptionPanel(TgBot::Bot* bot, int64_t chatId, int64_t messageId, TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
+    /* Game Messages */
     static TgBot::Message::Ptr secondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int secondsLeft);
 
     static void editSecondsLeftMessage(TgBot::Bot* bot, int64_t chatId, int64_t messageId, int secondsLeft);

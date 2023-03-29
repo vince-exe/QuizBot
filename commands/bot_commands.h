@@ -15,6 +15,7 @@ private:
     TgBot::Bot* bot;
     TgBot::EventBroadcaster* eventBroadCaster;
 
+    /* bot keyboards */
     TgBot::InlineKeyboardMarkup::Ptr startKeyBoard;
     TgBot::InlineKeyboardMarkup::Ptr backToStartPanel;
     TgBot::InlineKeyboardMarkup::Ptr configKeyBoard;
@@ -22,9 +23,11 @@ private:
     TgBot::InlineKeyboardMarkup::Ptr playKeyboard;
     TgBot::InlineKeyboardMarkup::Ptr nextQuestionKeyboard;
     TgBot::InlineKeyboardMarkup::Ptr newGameKeyboard;
+    TgBot::InlineKeyboardMarkup::Ptr changeSettingsKeyboard;
 
     TgBot::CallbackQuery::Ptr query;
 
+    /* catche the creatorId and groupChat */
     int64_t creatorId;
     int64_t groupChat;
 

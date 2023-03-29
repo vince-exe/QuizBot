@@ -31,6 +31,9 @@ BotCommands::BotCommands(TgBot::Bot* bot) {
 
     TgBot::InlineKeyboardMarkup::Ptr newGameKeyboard(new TgBot::InlineKeyboardMarkup);
     this->newGameKeyboard = newGameKeyboard;
+
+    TgBot::InlineKeyboardMarkup::Ptr changeSettingsKeyboard(new TgBot::InlineKeyboardMarkup);
+    this->changeSettingsKeyboard = changeSettingsKeyboard;
 }
 
 BotCommands::~BotCommands() {
@@ -79,7 +82,7 @@ void BotCommands::init() {
 
     BotUtils::setKeyBoard((this->backToStartPanel), {{"🔙 Back", "backToStartPanel"}});
 
-    BotUtils::setKeyBoard((this->configKeyBoard), {{"🔖 Vedi Domande", "show_questions"}});
+    BotUtils::setKeyBoard((this->configKeyBoard), {{"🔖 Vedi Domande", "show_questions"}, {"⚙️ Modifica Impostazioni", "change_game_settings"}});
 
     BotUtils::setKeyBoard((this->backToSettingsPanel), {{"🛠️ Pannello Impostazioni", "back_config_panel"}});
 
@@ -88,6 +91,13 @@ void BotCommands::init() {
     BotUtils::setKeyBoard((this->nextQuestionKeyboard), {{"🔖 Prossima Domanda", "next_question"}});
 
     BotUtils::setKeyBoard((this->newGameKeyboard), {{"✅ Nuova Partita", "new_game"}});
+
+    BotUtils::setKeyBoard((this->changeSettingsKeyboard), {
+        {"📬", "change_time_question"},
+        {"❌", "change_points_invalid_question"},
+        {"✅", "change_points_valid_question"}
+    });
+    BotUtils::setKeyBoard((this->changeSettingsKeyboard), {{"🛠️ Pannello Impostazioni", "back_config_panel"}});
 
     this->start();
     this->configQuestions();
@@ -114,14 +124,17 @@ void BotCommands::callBackQuery() {
             return;
         }
 
+        else if(query->data == "change_game_settings") {
+            BotMessages::showConfigOptionPanel(this->bot, user->user->id, query->message->messageId, this->changeSettingsKeyboard);
+            return;
+        }
+
         else if(query->data == "true_response" || query->data == "false_response") {
             try {
                 /* if the user already clicked */
                 if(Game::checkVectorTest(user->user->id)) { return; }
                 Game::checkVector.push_back(user->user->id);
                     
-                std::cout<<"\nentrato ragazzo: " << user->user->username;
-
                 if(Game::userExist(user->user->id)) { 
                     if(query->data == "true_response" && Game::selectedQuestion.getResult() || 
                         query->data == "false_response" && !Game::selectedQuestion.getResult()) {
@@ -174,7 +187,7 @@ void BotCommands::callBackQuery() {
             else if(query->data == "ToS") {
                 BotMessages::printToS(this->bot, query->message->chat->id, query->message->messageId, this->backToStartPanel);
             }
-            else if(query->data == "update_private" && !this->bot->getApi().blockedByUser(user->user->id)) {
+            else if(query->data == "update_private" && !this->bot->getApi().blockedByUser(user->user->id) && this->botStarted) {
                 BotMessages::printConfigPanel(this->bot, user->user->id, this->configKeyBoard);
             } 
 
