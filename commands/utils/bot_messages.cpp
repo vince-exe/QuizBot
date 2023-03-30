@@ -92,17 +92,7 @@ void BotMessages::phraseHasErrors(TgBot::Bot* bot, int64_t chatId, int errors) {
     );
 }
 
-void BotMessages::emptyQuestionsList(TgBot::Bot* bot, int64_t chatId) {
-    bot->getApi().sendMessage(
-        chatId,
-        "🤖 <b>Avviso Bot</b> " \
-        "\n\n⛔ La lista di quesiti è vuota." \
-        "\n\n🔖 Utilizza il comando /configQuestions per configurare dei quesiti.",
-        false, 0, std::make_shared<TgBot::GenericReply>(), "HTML"
-    );
-}
-
- void BotMessages::pharasesSuccess(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyBoard) {
+void BotMessages::pharasesSuccess(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyBoard) {
     bot->getApi().sendMessage(
         chatId,
         "🤖 <b>Domande Aggiunte</b>" \
@@ -223,14 +213,32 @@ void BotMessages::showConfigOptionPanel(TgBot::Bot* bot, int64_t chatId, int64_t
         "🤖 <b>Configurazione Impostazioni</b> \
         \n\n📛 In questa sezioni potrai modificare le impostazioni di partita. \
         \n\n📮 Valori Per Impostazione \
-        \n\n🔹 <b>Tempo Domanda</b> ( 2️⃣ -- 5️⃣0️⃣ ) secondi. \
-        \n\n🔹 <b>Punteggio Risposta Corretta</b> ( 0️⃣ -- 2️⃣0️⃣0️⃣0️⃣ ) \
-        \n\n🔹 <b>Punteggio Risposta Sbagliata</b> ( 0️⃣ -- 2️⃣1️⃣0️⃣0️⃣ ) \
+        \n\n🔹 <b>Tempo Domanda</b> ( 2 -- 50 ) secondi. \
+        \n\n🔹 <b>Punteggio Risposta Corretta</b> ( 0 -- 2000 ) \
+        \n\n🔹 <b>Punteggio Risposta Sbagliata</b> ( 0 -- 2100 ) \
         \n\n 📮 Valori Correnti \
-        \n\n📬 <b>Tempo Domanda: </b> " + std::to_string(Game::timeForQuestion) + \
+        \n\n⏳ <b>Tempo Domanda: </b> " + std::to_string(Game::timeForQuestion) + \
         "\n\n✅ <b>Punteggio Risposta Esatta: </b> " + std::to_string(Game::pointsCorrectQuestion) + \
         "\n\n❌ <b> Punteggio Risposta Sbagliata: </b> " + std::to_string(Game::pointIncorrectQuestion) + \
         "\n\n✏️ Utilizza il comando /configSetting \"valore\" dopo aver cliccato il pulsante dell'impostazione da cambiare. ",
         chatId, messageId, std::string(), "HTML", false, keyboard
+    );
+}
+
+void BotMessages::sendConfigOptionPanel(TgBot::Bot* bot, int64_t chatId, TgBot::InlineKeyboardMarkup::Ptr keyboard) {
+    bot->getApi().sendMessage(
+        chatId,
+        "🤖 <b>Configurazione Impostazioni</b> \
+        \n\n📛 In questa sezioni potrai modificare le impostazioni di partita. \
+        \n\n📮 Valori Per Impostazione \
+        \n\n🔹 <b>Tempo Domanda</b> ( 2 -- 50 ) secondi. \
+        \n\n🔹 <b>Punteggio Risposta Corretta</b> ( 0 -- 2000 ) \
+        \n\n🔹 <b>Punteggio Risposta Sbagliata</b> ( 0 -- 2100 ) \
+        \n\n 📮 Valori Correnti \
+        \n\n⏳ <b>Tempo Domanda: </b> " + std::to_string(Game::timeForQuestion) + \
+        "\n\n✅ <b>Punteggio Risposta Esatta: </b> " + std::to_string(Game::pointsCorrectQuestion) + \
+        "\n\n❌ <b> Punteggio Risposta Sbagliata: </b> " + std::to_string(Game::pointIncorrectQuestion) + \
+        "\n\n✏️ Utilizza il comando /configSetting \"valore\" dopo aver cliccato il pulsante dell'impostazione da cambiare.",
+        false, 0, keyboard, "HTML"
     );
 }

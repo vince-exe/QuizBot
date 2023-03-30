@@ -27,12 +27,15 @@ private:
 
     TgBot::CallbackQuery::Ptr query;
 
-    /* catche the creatorId and groupChat */
+    /* cache the creatorId and groupChat */
     int64_t creatorId;
     int64_t groupChat;
 
     bool gameRunning;
-    
+
+    /* cache the selected setting */
+    int currentSetting;
+
     TgBot::Message::Ptr timeFinishedMsg;
     TgBot::Message::Ptr questionMsg;
 
@@ -65,6 +68,8 @@ public:
     void start();
 
     void configQuestions();
+
+    void configQuestion();
 };
 
 #endif

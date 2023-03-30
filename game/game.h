@@ -16,6 +16,17 @@ using namespace std;
  */
 class Game {
 public:
+    /* game settings constants */
+    static const int MAX_TIME_QUEST = 50;
+    static const int MIN_TIME_QUEST = 2;
+
+    static const int MAX_POINTS_CORRECT_QUEST = 2000;
+    static const int MIN_POINTS_CORRECT_QUEST = 0;
+
+    static const int MAX_POINTS_INCORRECT_QUEST = 2100;
+    static const int MIN_POINTS_INCORRECT_QUEST = 0;
+
+public:
     /* static QuestionManager pointer, used to handle the questions of the bot */
     static QuestionsManager* manager;
 

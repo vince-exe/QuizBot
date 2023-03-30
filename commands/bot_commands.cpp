@@ -2,10 +2,12 @@
 
 BotCommands::BotCommands(TgBot::Bot* bot) {
     this->bot = bot;
+    
     this->creatorId = 0;
     this->groupChat = 0;
-    this->gameRunning = false;
+    this->currentSetting = -1;
 
+    this->gameRunning = false;
     this->botStarted = false;
     this->gameStarted = false;
 
@@ -43,12 +45,13 @@ BotCommands::~BotCommands() {
 void* BotCommands::countThread(void* arg) {
     BotCommands* data = (BotCommands *) arg;
     
-    TgBot::Message::Ptr msg = BotMessages::secondsLeftMessage(data->bot, data->groupChat, 10);
-  
+    TgBot::Message::Ptr msg = BotMessages::secondsLeftMessage(data->bot, data->groupChat, Game::timeForQuestion);
+    int changeTime = Game::timeForQuestion / 2;
+
     for(int i = 0; i < Game::timeForQuestion; i++) {
         try {
-            if(i == 5) {
-                BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, 5);
+            if(i == changeTime) {
+                BotMessages::editSecondsLeftMessage(data->bot, data->groupChat, msg->messageId, changeTime);
             }
 
             sleep(1);
@@ -93,7 +96,7 @@ void BotCommands::init() {
     BotUtils::setKeyBoard((this->newGameKeyboard), {{"✅ Nuova Partita", "new_game"}});
 
     BotUtils::setKeyBoard((this->changeSettingsKeyboard), {
-        {"📬", "change_time_question"},
+        {"⏳", "change_time_question"},
         {"❌", "change_points_invalid_question"},
         {"✅", "change_points_valid_question"}
     });
@@ -101,6 +104,7 @@ void BotCommands::init() {
 
     this->start();
     this->configQuestions();
+    this->configQuestion();
     this->callBackQuery();  
 }
 
@@ -110,8 +114,14 @@ void BotCommands::callBackQuery() {
         this->query = query;
 
         if(query->data == "show_questions") {
+
             if(!Game::manager->lenght()) {
-                BotMessages::emptyQuestionsList(this->bot, user->user->id);
+                this->bot->getApi().answerCallbackQuery(
+                    query->id,
+                    "⛔ La lista di quesiti è vuota. ⛔ \
+                    \n\n🔖 Utilizza il comando /configQuestions per configurare dei quesiti.",
+                    true
+                );
             }
             else {
                 BotMessages::showQuestions(this->bot, user->user->id, query->message->messageId, this->backToSettingsPanel);
@@ -121,12 +131,24 @@ void BotCommands::callBackQuery() {
 
         if(query->data == "back_config_panel") {
             BotMessages::editConfigPanel(this->bot, user->user->id, query->message->messageId, this->configKeyBoard);
+
             return;
         }
 
         else if(query->data == "change_game_settings") {
             BotMessages::showConfigOptionPanel(this->bot, user->user->id, query->message->messageId, this->changeSettingsKeyboard);
             return;
+        }
+
+        /* Config Settings */
+        else if(query->data == "change_time_question") {
+            this->currentSetting = BotUtils::config::TimeForQuestion;
+        }
+        else if(query->data == "change_points_invalid_question") {
+            this->currentSetting = BotUtils::config::PointsInvalidQuestion;
+        }
+        else if(query->data == "change_points_valid_question") {
+            this->currentSetting = BotUtils::config::PointsValidQuestion;
         }
 
         else if(query->data == "true_response" || query->data == "false_response") {
@@ -196,12 +218,17 @@ void BotCommands::callBackQuery() {
             else if(query->data == "startGame" || query->data == "new_game") {
                 /* check if the questions list is empty */
                 if(!Game::manager->lenght()) {
-                    BotMessages::emptyQuestionsList(this->bot, query->message->chat->id);
+                    this->bot->getApi().answerCallbackQuery(
+                        query->id,
+                        "⛔ La lista di quesiti è vuota. ⛔ \
+                        \n\n🔖 Utilizza il comando /configQuestions per configurare dei quesiti.",
+                        true
+                    );
                     return;
                 }
 
                 if(this->gameRunning) { 
-                    this->bot->getApi().answerCallbackQuery(std::string(), "⚠️ Una partita è ancora in corso... ⚠️", true);
+                    this->bot->getApi().answerCallbackQuery(query->id, "⚠️ Una partita è ancora in corso... ⚠️", true);
                     return;
                 }
 
@@ -282,7 +309,7 @@ void BotCommands::configQuestions() {
             BotMessages::badCommandArgs(this->bot, message->chat->id);
             return;
         }
-        
+
         std::string checkString = BotUtils::removeCommand(message->text, 17);
         pair<list<Question>, unsigned int> check = QuestionsChecker::getPhrases(checkString);
 
@@ -297,5 +324,43 @@ void BotCommands::configQuestions() {
             Game::manager->add(check.first);
             BotMessages::pharasesSuccess(this->bot, message->chat->id, this->backToSettingsPanel);
         }
+    });
+}
+
+void BotCommands::configQuestion() {
+    this->eventBroadCaster->onCommand("configSetting", [this](TgBot::Message::Ptr message) {
+        if(message->chat->type != TgBot::Chat::Type::Private || !this->botStarted || message->from->id != this->creatorId) { return; }
+
+        if(BotUtils::countArguments("/configSetting", message->text) <= 0) {
+            BotMessages::badCommandArgs(this->bot, message->chat->id);
+            return;
+        }
+
+        std::string body = BotUtils::removeCommand(message->text, 15);
+        int value = std::atoi(body.c_str());
+
+        switch (this->currentSetting) {
+            case BotUtils::config::PointsInvalidQuestion:
+                if(value < Game::MIN_POINTS_INCORRECT_QUEST || value > Game::MAX_POINTS_INCORRECT_QUEST) { return; }
+                Game::pointIncorrectQuestion = value;
+                break;
+
+            case BotUtils::config::PointsValidQuestion:
+                if(value < Game::MIN_POINTS_CORRECT_QUEST || value > Game::MAX_POINTS_CORRECT_QUEST) { return; }
+                Game::pointsCorrectQuestion = value;
+                break;
+
+            case BotUtils::config::TimeForQuestion:
+                if(value < Game::MIN_TIME_QUEST || value > Game::MAX_TIME_QUEST) { return; }
+                Game::timeForQuestion = value;
+                break;
+
+            default:
+                return;
+        }
+
+        BotMessages::sendConfigOptionPanel(this->bot, message->chat->id, this->changeSettingsKeyboard);
+        this->currentSetting = -1;
+
     });
 }
